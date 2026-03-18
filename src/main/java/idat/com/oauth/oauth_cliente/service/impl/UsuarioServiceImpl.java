@@ -37,7 +37,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .authProvider(AuthProvider.LOCAL)
-                .role("ROLE_USER")
+                .role("ROLE_ADMIN")
                 .fechaRegistro(LocalDateTime.now())
                 .build();
 
@@ -94,6 +94,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe usuario GitHub para guardar token"));
 
+        System.out.println("Buscando usuario con githubId: " + githubId);
         usuario.setAccessToken(accessToken);
         usuarioRepository.save(usuario);
     }

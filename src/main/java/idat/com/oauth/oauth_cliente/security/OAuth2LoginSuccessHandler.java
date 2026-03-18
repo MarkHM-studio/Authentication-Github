@@ -5,11 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +34,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 oauthToken.getName());
 
         if (authorizedClient != null) {
-            String githubId = String.valueOf(oauthToken.getPrincipal().getAttribute("id"));
+            OAuth2User user = oauthToken.getPrincipal();
+            String githubId = String.valueOf(user.getAttributes().get("id"));
+            /*String githubId = String.valueOf(Objects.requireNonNull(oauthToken.getPrincipal().getAttribute("id")));
+            */
             String token = authorizedClient.getAccessToken().getTokenValue();
             usuarioService.actualizarTokenGithub(githubId, token);
+            System.out.println("GitHub ID: " + githubId);
+            System.out.println("TOKEN: " + token);
         }
 
         response.sendRedirect("/api/usuario/perfil");
